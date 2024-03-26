@@ -16,7 +16,8 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: 21 # Alternative distribution options are available.
+          java-version: 21 
+          distribution: 'adopt' # Alternative distribution options are available.
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
