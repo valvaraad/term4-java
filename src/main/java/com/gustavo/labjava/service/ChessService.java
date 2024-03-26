@@ -10,6 +10,6 @@ public class ChessService {
         String apiUrl = "https://api.chess.com/pub/player/" + username;
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForObject(apiUrl, PlayerResponse.class);
-    };
+    }
 
 }

@@ -1,6 +1,5 @@
 package com.gustavo.labjava.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
