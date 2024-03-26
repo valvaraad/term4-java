@@ -1,22 +1,27 @@
 package com.gustavo.labjava.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class PlayerResponse {
     private String url;
     private String username;
-    private Integer player_id;
+    @JsonProperty("player_id")
+        private Integer playerId;
     private String title;
     private String status;
     private String name;
     private String avatar;
     private String country;
-    private Boolean is_streamer;
-    private String twitch_url;
+    @JsonProperty("is_streamer")
+        private Boolean isStreamer;
+    @JsonProperty("twitch_url")
+        private String twitchUrl;
     private String location;
     private Integer joined;
-    private Integer last_online;
+    @JsonProperty("last_online")
+        private Integer lastOnline;
     private Integer followers;
     private Integer fide;
 }
