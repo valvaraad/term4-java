@@ -8,7 +8,7 @@ import com.gustavo.labjava.model.PlayerResponse;
 @RestController
 public class ChessController {
 
-    @RequestMapping("/player")
+    @GetMapping("/player")
     public PlayerResponse getPlayer(@RequestParam("username") String username) {
         return ChessService.getStats(username);
     }
