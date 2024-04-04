@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ChessService {
     private ChessService() {}
-    public static PlayerResponse getStats(String username) {
+    public PlayerResponse getStats(String username) {
         String apiUrl = "https://api.chess.com/pub/player/" + username;
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForObject(apiUrl, PlayerResponse.class);
