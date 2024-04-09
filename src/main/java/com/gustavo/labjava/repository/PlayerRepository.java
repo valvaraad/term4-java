@@ -1,4 +1,10 @@
 package com.gustavo.labjava.repository;
 
-public class PlayerRepository {
+import com.gustavo.labjava.model.Player;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface PlayerRepository extends JpaRepository<Player, Long> {
+
 }

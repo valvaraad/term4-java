@@ -1,27 +1,31 @@
 package com.gustavo.labjava.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "\"players\"")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Player {
-    private String url;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
+    @Column(name = "username")
     private String username;
-    @JsonProperty("player_id")
-        private Integer playerId;
+
+    @Column(name = "title")
     private String title;
-    private String status;
+
+    @Column(name = "name")
     private String name;
-    private String avatar;
+
+    @Column(name = "country")
     private String country;
-    @JsonProperty("is_streamer")
-        private Boolean isStreamer;
-    @JsonProperty("twitch_url")
-        private String twitchUrl;
-    private String location;
-    private Integer joined;
-    @JsonProperty("last_online")
-        private Integer lastOnline;
-    private Integer followers;
-    private Integer fide;
 }
