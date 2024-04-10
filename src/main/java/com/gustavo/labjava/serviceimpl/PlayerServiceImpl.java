@@ -6,15 +6,10 @@ import com.gustavo.labjava.model.Player;
 import com.gustavo.labjava.mapper.PlayerMapper;
 import com.gustavo.labjava.repository.PlayerRepository;
 import com.gustavo.labjava.service.PlayerService;
-import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
