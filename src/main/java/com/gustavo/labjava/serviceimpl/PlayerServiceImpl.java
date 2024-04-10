@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -41,7 +40,7 @@ public class PlayerServiceImpl implements PlayerService {
     public List<PlayerDto> getAllPlayers() {
 
         List<Player> players =  playerRepository.findAll();
-        return players.stream().map((player) -> PlayerMapper.mapToPlayerDto(player))
+        return players.stream().map(PlayerMapper::mapToPlayerDto)
                 .toList();
     }
 
