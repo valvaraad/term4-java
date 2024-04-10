@@ -42,7 +42,7 @@ public class PlayerServiceImpl implements PlayerService {
 
         List<Player> players =  playerRepository.findAll();
         return players.stream().map((player) -> PlayerMapper.mapToPlayerDto(player))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public void deletePlayer(Long playerId) {
 
-        Player player = playerRepository.findById(playerId).orElseThrow(
+        playerRepository.findById(playerId).orElseThrow(
                 () -> new ResourceNotFoundException("There is no player with given ID: " + playerId));
 
         playerRepository.deleteById(playerId);
