@@ -17,8 +17,12 @@ import java.util.List;
 @Service
 public class PlayerServiceImpl implements PlayerService {
 
-    @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    public PlayerServiceImpl(PlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
+    }
 
     @Override
     public PlayerDto createPlayer(PlayerDto playerDto) {
