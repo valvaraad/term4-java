@@ -84,12 +84,13 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public void deletePlayer(Long playerId) {
 
-        Player player = playerRepository.findById(playerId).orElseThrow(
-                () -> new ResourceNotFoundException("There is no player with given ID: " + playerId));
+        if (playerRepository.findById(playerId).isEmpty()) {
+            throw new ResourceNotFoundException("There is no player with given ID: " + playerId);
+        }
 
         playerRepository.deleteById(playerId);
-
     }
+
 
 
 }
