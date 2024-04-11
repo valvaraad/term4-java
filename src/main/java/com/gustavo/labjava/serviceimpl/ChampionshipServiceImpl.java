@@ -55,8 +55,9 @@ public class ChampionshipServiceImpl implements ChampionshipService {
     @Override
     public void deleteChampionship(Long championshipId) {
 
-        championshipRepository.findById(championshipId).orElseThrow(
-                () -> new ResourceNotFoundException("There is no championship with given ID: " + championshipId));
+        if (championshipRepository.findById(championshipId).isEmpty()) {
+            throw new ResourceNotFoundException("There is no championship with given ID: " + championshipId);
+        }
 
         championshipRepository.deleteById(championshipId);
     }
