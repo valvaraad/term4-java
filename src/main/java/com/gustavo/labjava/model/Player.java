@@ -1,9 +1,9 @@
 package com.gustavo.labjava.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "\"players\"")
@@ -18,12 +18,17 @@ public class Player {
     @Column(name = "username")
     private String username;
 
-    @Column(name = "title")
-    private String title;
-
     @Column(name = "name")
     private String name;
 
-    @Column(name = "country")
-    private String country;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id", referencedColumnName = "id")
+    private Country country;
+
+    @ManyToMany
+    @JoinTable(name = "player_championship",
+            inverseJoinColumns = @JoinColumn(name = "championship_id", referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = "country_id", referencedColumnName = "id")
+    )
+    private List<Championship> championships;
 }

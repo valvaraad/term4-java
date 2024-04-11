@@ -4,8 +4,7 @@ import com.gustavo.labjava.dto.PlayerDto;
 import com.gustavo.labjava.service.PlayerService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
