@@ -17,4 +17,5 @@ public interface ChampionshipService {
     ChampionshipDto updateChampionship(Long championshipId, ChampionshipDto updateChampionship);
 
     void deleteChampionship(Long championshipId);
+
 }

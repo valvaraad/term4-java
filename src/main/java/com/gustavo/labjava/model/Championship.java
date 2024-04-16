@@ -3,7 +3,7 @@ package com.gustavo.labjava.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Data
@@ -21,6 +21,7 @@ public class Championship {
     @Column(name = "place")
     private String place;
 
-    @ManyToMany(mappedBy = "championships")
+    @ManyToMany(mappedBy = "championships", cascade = {CascadeType.ALL})
     private List<Player> players;
+
 }

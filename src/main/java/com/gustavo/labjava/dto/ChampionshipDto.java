@@ -7,6 +7,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChampionshipDto {
+
     Long id;
     private Integer year;
     private String place;
