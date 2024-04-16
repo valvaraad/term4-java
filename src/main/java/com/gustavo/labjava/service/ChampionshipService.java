@@ -1,6 +1,7 @@
 package com.gustavo.labjava.service;
 
 import com.gustavo.labjava.dto.ChampionshipDto;
+import com.gustavo.labjava.model.Championship;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,5 +18,7 @@ public interface ChampionshipService {
     ChampionshipDto updateChampionship(Long championshipId, ChampionshipDto updateChampionship);
 
     void deleteChampionship(Long championshipId);
+
+    ChampionshipDto getChampionshipByYear(Integer year);
 
 }

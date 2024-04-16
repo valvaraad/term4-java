@@ -6,6 +6,7 @@ import com.gustavo.labjava.model.*;
 import com.gustavo.labjava.mapper.PlayerMapper;
 import com.gustavo.labjava.repository.*;
 import com.gustavo.labjava.service.PlayerService;
+import com.gustavo.labjava.utils.cache.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,15 +21,18 @@ public class PlayerServiceImpl implements PlayerService {
     private CountryRepository countryRepository;
     private ChampionshipRepository championshipRepository;
     private PlayerMapper playerMapper;
+    private GenericCache<Long, Player> playerCache;
 
     @Autowired
     public PlayerServiceImpl(PlayerRepository playerRepository,
                              CountryRepository countryRepository,
-                             ChampionshipRepository championshipRepository) {
+                             ChampionshipRepository championshipRepository,
+                             GenericCache<Long, Player> playerCache) {
         this.playerRepository = playerRepository;
         this.countryRepository = countryRepository;
         this.championshipRepository = championshipRepository;
         this.playerMapper = new PlayerMapper(countryRepository, championshipRepository);
+        this.playerCache = playerCache;
     }
 
     @Override
@@ -42,8 +46,9 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public PlayerDto getPlayerById(Long playerId) {
 
-        Player player = playerRepository.findById(playerId).orElseThrow(() ->
-                new ResourceNotFoundException("Player with ID " + playerId + " does not exist."));
+        Player player = playerCache.get(playerId).orElseGet(() -> playerRepository.findById(playerId).orElseThrow(() ->
+                new ResourceNotFoundException("Player with ID " + playerId + " does not exist.")));
+        playerCache.put(playerId, player);
         return playerMapper.mapToPlayerDto(player);
     }
 
@@ -58,8 +63,8 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public PlayerDto updatePlayer(Long playerId, PlayerDto updatedPlayer) {
 
-        Player player = playerRepository.findById(playerId).orElseThrow(
-                () -> new ResourceNotFoundException("There is no player with given ID: " + playerId));
+        Player player = playerCache.get(playerId).orElseGet(() -> playerRepository.findById(playerId).orElseThrow(() ->
+                new ResourceNotFoundException("Player with ID " + playerId + " does not exist.")));
 
         player.setUsername(updatedPlayer.getUsername());
         player.setName(updatedPlayer.getName());
@@ -78,6 +83,8 @@ public class PlayerServiceImpl implements PlayerService {
 
         Player updatedPlayerObj = playerRepository.save(player);
 
+        playerCache.remove(playerId);
+
         return playerMapper.mapToPlayerDto(updatedPlayerObj);
     }
 
@@ -88,6 +95,7 @@ public class PlayerServiceImpl implements PlayerService {
             throw new ResourceNotFoundException("There is no player with given ID: " + playerId);
         }
 
+        playerCache.remove(playerId);
         playerRepository.deleteById(playerId);
     }
 

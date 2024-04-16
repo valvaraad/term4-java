@@ -36,6 +36,12 @@ public class ChampionshipController {
         return ResponseEntity.ok(championships);
     }
 
+    @GetMapping("/year/{year}")
+    public ResponseEntity<ChampionshipDto> getChampionshipByYear(@PathVariable("year") Integer year) {
+        ChampionshipDto championshipDto = championshipService.getChampionshipByYear(year);
+        return ResponseEntity.ok(championshipDto);
+    }
+
     @PutMapping("{id}")
     public ResponseEntity<ChampionshipDto> updateChampionship(@PathVariable("id") Long championshipId,
                                                     @RequestBody ChampionshipDto updatedChampionship) {

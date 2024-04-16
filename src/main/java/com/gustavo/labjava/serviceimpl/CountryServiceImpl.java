@@ -6,6 +6,7 @@ import com.gustavo.labjava.mapper.CountryMapper;
 import com.gustavo.labjava.model.Country;
 import com.gustavo.labjava.repository.CountryRepository;
 import com.gustavo.labjava.service.CountryService;
+import com.gustavo.labjava.utils.cache.GenericCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +17,13 @@ public class CountryServiceImpl implements CountryService {
 
     private final CountryRepository countryRepository;
     private final CountryMapper countryMapper;
+    private final GenericCache<Long, Country> countryCache;
 
     @Autowired
-    public CountryServiceImpl(CountryRepository countryRepository)  {
+    public CountryServiceImpl(CountryRepository countryRepository, GenericCache<Long, Country> countryCache)  {
         this.countryRepository = countryRepository;
         this.countryMapper = new CountryMapper();
+        this.countryCache = countryCache;
     }
     @Override
     public CountryDto createCountry(CountryDto countryDto) {
@@ -31,8 +34,8 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public CountryDto getCountryById(Long countryId) {
-        Country country = countryRepository.findById(countryId).orElseThrow(() ->
-                new ResourceNotFoundException("Country with ID " + countryId + " does not exist."));
+        Country country = countryCache.get(countryId).orElseGet(() -> countryRepository.findById(countryId).orElseThrow(() ->
+                new ResourceNotFoundException("Country with ID " + countryId + " does not exist.")));
         return countryMapper.mapToCountryDto(country);
     }
 
@@ -45,13 +48,14 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public CountryDto updateCountry(Long countryId, CountryDto updateCountry) {
 
-        Country country = countryRepository.findById(countryId).orElseThrow(
-                () -> new ResourceNotFoundException("There is no country with given ID: " + countryId));
+        Country country = countryCache.get(countryId).orElseGet(() -> countryRepository.findById(countryId).orElseThrow(() ->
+                new ResourceNotFoundException("Country with ID " + countryId + " does not exist.")));
 
         country.setName(updateCountry.getName());
         country.setCode(updateCountry.getCode());
 
         Country updatedCountryObj = countryRepository.save(country);
+        countryCache.remove(countryId);
         return countryMapper.mapToCountryDto(updatedCountryObj);
     }
 
@@ -62,6 +66,7 @@ public class CountryServiceImpl implements CountryService {
             throw new ResourceNotFoundException("There is no country with given ID: " + countryId);
         }
 
+        countryCache.remove(countryId);
         countryRepository.deleteById(countryId);
     }
 

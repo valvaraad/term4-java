@@ -6,6 +6,7 @@ import com.gustavo.labjava.mapper.ChampionshipMapper;
 import com.gustavo.labjava.model.*;
 import com.gustavo.labjava.repository.*;
 import com.gustavo.labjava.service.ChampionshipService;
+import com.gustavo.labjava.utils.cache.GenericCache;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +18,17 @@ public class ChampionshipServiceImpl implements ChampionshipService {
 
     private final ChampionshipRepository championshipRepository;
     private final ChampionshipMapper championshipMapper;
-
+    private GenericCache<Long, Championship> championshipCache;
     private final PlayerRepository playerRepository;
 
     @Autowired
-    public ChampionshipServiceImpl(ChampionshipRepository championshipRepository, PlayerRepository playerRepository)  {
+    public ChampionshipServiceImpl(ChampionshipRepository championshipRepository,
+                                   PlayerRepository playerRepository,
+                                   GenericCache<Long, Championship> championshipCache)  {
         this.championshipRepository = championshipRepository;
         this.championshipMapper = new ChampionshipMapper(playerRepository);
         this.playerRepository = playerRepository;
+        this.championshipCache = championshipCache;
     }
     @Override
     public ChampionshipDto createChampionship(ChampionshipDto championshipDto) {
@@ -35,8 +39,8 @@ public class ChampionshipServiceImpl implements ChampionshipService {
 
     @Override
     public ChampionshipDto getChampionshipById(Long championshipId) {
-        Championship championship = championshipRepository.findById(championshipId).orElseThrow(() ->
-                new ResourceNotFoundException("Championship with ID " + championshipId + " does not exist."));
+        Championship championship = championshipCache.get(championshipId).orElseGet(() -> championshipRepository.findById(championshipId).orElseThrow(() ->
+                new ResourceNotFoundException("Championship with ID " + championshipId + " does not exist.")));
         return championshipMapper.mapToChampionshipDto(championship);
     }
 
@@ -77,6 +81,15 @@ public class ChampionshipServiceImpl implements ChampionshipService {
         playerRepository.deleteAll(playersToDelete);
 
         championship.getPlayers().clear();
+
+        championshipCache.remove(championshipId);
         championshipRepository.delete(championship);
+    }
+
+    @Override
+    public ChampionshipDto getChampionshipByYear(Integer year) {
+        Championship championship = championshipRepository.findByYear(year).orElseThrow(() ->
+                new ResourceNotFoundException("No championship took place in " + year + "."));
+        return championshipMapper.mapToChampionshipDto(championship);
     }
 }
