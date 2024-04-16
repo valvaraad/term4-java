@@ -1,6 +1,5 @@
 package com.gustavo.labjava.repository;
 
-import com.gustavo.labjava.dto.ChampionshipDto;
 import com.gustavo.labjava.model.Championship;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
