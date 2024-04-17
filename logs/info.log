@@ -1,0 +1,4 @@
+00:38:21.340 INFO  c.g.labjava.aspect.LoggingAspect - Aspect is initialized
+00:39:01.722 INFO  c.g.labjava.aspect.LoggingAspect - Called method getAllPlayers(); args: []
+00:39:01.844 INFO  c.g.labjava.aspect.LoggingAspect - Method getAllPlayers is returned; value: [PlayerDto(id=19, username=who, name=who the fuck, countryId=17, championshipIds=[])]
+00:39:36.410 INFO  c.g.labjava.aspect.LoggingAspect - Aspect is destroyed

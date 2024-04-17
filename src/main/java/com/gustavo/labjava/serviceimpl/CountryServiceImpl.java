@@ -1,5 +1,6 @@
 package com.gustavo.labjava.serviceimpl;
 
+import com.gustavo.labjava.aspect.Logger;
 import com.gustavo.labjava.dto.CountryDto;
 import com.gustavo.labjava.exception.*;
 import com.gustavo.labjava.mapper.CountryMapper;
@@ -26,6 +27,7 @@ public class CountryServiceImpl implements CountryService {
         this.countryCache = countryCache;
     }
     @Override
+    @Logger
     public CountryDto createCountry(CountryDto countryDto) {
 
         if (countryDto.getCode().isEmpty() || countryDto.getName().isEmpty()) {
@@ -38,6 +40,7 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @Logger
     public CountryDto getCountryById(Long countryId) {
         Country country = countryCache.get(countryId).orElseGet(() -> countryRepository.findById(countryId).orElseThrow(() ->
                 new ResourceNotFoundException("Country with ID " + countryId + " does not exist.")));
@@ -45,12 +48,14 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @Logger
     public List<CountryDto> getAllCountries() {
         List<Country> countries = countryRepository.findAll();
         return countries.stream().map(countryMapper::mapToCountryDto).toList();
     }
 
     @Override
+    @Logger
     public CountryDto updateCountry(Long countryId, CountryDto updateCountry) {
 
         if (updateCountry.getName().isEmpty() || updateCountry.getCode().isEmpty()) {
@@ -69,6 +74,7 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    @Logger
     public void deleteCountry(Long countryId) {
 
         if (countryRepository.findById(countryId).isEmpty()) {

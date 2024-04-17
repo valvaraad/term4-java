@@ -1,5 +1,6 @@
 package com.gustavo.labjava.serviceimpl;
 
+import com.gustavo.labjava.aspect.Logger;
 import com.gustavo.labjava.dto.PlayerDto;
 import com.gustavo.labjava.exception.*;
 import com.gustavo.labjava.model.*;
@@ -36,6 +37,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    @Logger
     public PlayerDto createPlayer(PlayerDto playerDto) {
         if (playerDto.getName().isEmpty() || playerDto.getUsername().isEmpty()) {
             throw new BadRequestException("Wrong player parameters");
@@ -47,6 +49,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    @Logger
     public PlayerDto getPlayerById(Long playerId) {
 
         Player player = playerCache.get(playerId).orElseGet(() -> playerRepository.findById(playerId).orElseThrow(() ->
@@ -56,6 +59,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    @Logger
     public List<PlayerDto> getAllPlayers() {
 
         List<Player> players =  playerRepository.findAll();
@@ -64,6 +68,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    @Logger
     public PlayerDto updatePlayer(Long playerId, PlayerDto updatedPlayer) {
 
         if (updatedPlayer.getUsername().isEmpty() || updatedPlayer.getName().isEmpty()) {
@@ -96,6 +101,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    @Logger
     public void deletePlayer(Long playerId) {
 
         if (playerRepository.findById(playerId).isEmpty()) {
