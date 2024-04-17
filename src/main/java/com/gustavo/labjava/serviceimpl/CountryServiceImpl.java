@@ -1,7 +1,7 @@
 package com.gustavo.labjava.serviceimpl;
 
 import com.gustavo.labjava.dto.CountryDto;
-import com.gustavo.labjava.exception.ResourceNotFoundException;
+import com.gustavo.labjava.exception.*;
 import com.gustavo.labjava.mapper.CountryMapper;
 import com.gustavo.labjava.model.Country;
 import com.gustavo.labjava.repository.CountryRepository;
@@ -27,6 +27,11 @@ public class CountryServiceImpl implements CountryService {
     }
     @Override
     public CountryDto createCountry(CountryDto countryDto) {
+
+        if (countryDto.getCode().isEmpty() || countryDto.getName().isEmpty()) {
+            throw new BadRequestException("Wrong country parameters");
+        }
+
         Country country = countryMapper.mapToCountry(countryDto);
         Country savedCountry = countryRepository.save(country);
         return countryMapper.mapToCountryDto(savedCountry);
@@ -47,6 +52,10 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public CountryDto updateCountry(Long countryId, CountryDto updateCountry) {
+
+        if (updateCountry.getName().isEmpty() || updateCountry.getCode().isEmpty()) {
+            throw new BadRequestException("Wrong country parameters");
+        }
 
         Country country = countryCache.get(countryId).orElseGet(() -> countryRepository.findById(countryId).orElseThrow(() ->
                 new ResourceNotFoundException("Country with ID " + countryId + " does not exist.")));

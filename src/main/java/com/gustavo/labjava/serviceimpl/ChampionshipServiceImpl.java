@@ -1,6 +1,7 @@
 package com.gustavo.labjava.serviceimpl;
 
 import com.gustavo.labjava.dto.ChampionshipDto;
+import com.gustavo.labjava.exception.BadRequestException;
 import com.gustavo.labjava.exception.ResourceNotFoundException;
 import com.gustavo.labjava.mapper.ChampionshipMapper;
 import com.gustavo.labjava.model.*;
@@ -32,6 +33,10 @@ public class ChampionshipServiceImpl implements ChampionshipService {
     }
     @Override
     public ChampionshipDto createChampionship(ChampionshipDto championshipDto) {
+        if (championshipDto.getYear() < 1800 || championshipDto.getPlace().isEmpty()) {
+            throw new BadRequestException("Wrong championship parameters");
+        }
+
         Championship championship = championshipMapper.mapToChampionship(championshipDto);
         Championship savedChampionship = championshipRepository.save(championship);
         return championshipMapper.mapToChampionshipDto(savedChampionship);
@@ -53,6 +58,10 @@ public class ChampionshipServiceImpl implements ChampionshipService {
     @Override
     public ChampionshipDto updateChampionship(Long championshipId, ChampionshipDto updateChampionship) {
 
+        if (updateChampionship.getYear() < 1800 || updateChampionship.getPlace().isEmpty()) {
+            throw new BadRequestException("Wrong championship parameters");
+        }
+
         Championship championship = championshipMapper.mapToChampionship(updateChampionship);
         championship.setId(championshipId);
 
@@ -64,7 +73,7 @@ public class ChampionshipServiceImpl implements ChampionshipService {
     @Transactional
     public void deleteChampionship(Long championshipId) {
         Championship championship = championshipRepository.findById(championshipId)
-                .orElseThrow(() -> new IllegalArgumentException("Championship not found with id " + championshipId));
+                .orElseThrow(() -> new ResourceNotFoundException("Championship not found with id " + championshipId));
 
         List<Player> playersToDelete = new ArrayList<>();
         championship.getPlayers().forEach(player -> {
