@@ -10,102 +10,106 @@ import com.gustavo.labjava.repository.*;
 import com.gustavo.labjava.service.ChampionshipService;
 import com.gustavo.labjava.utils.cache.GenericCache;
 import jakarta.transaction.Transactional;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class ChampionshipServiceImpl implements ChampionshipService {
 
-    private final ChampionshipRepository championshipRepository;
-    private final ChampionshipMapper championshipMapper;
-    private GenericCache<Long, Championship> championshipCache;
-    private final PlayerRepository playerRepository;
+  private final ChampionshipRepository championshipRepository;
+  private final ChampionshipMapper championshipMapper;
+  private final GenericCache<Long, Championship> championshipCache;
+  private final PlayerRepository playerRepository;
 
-    @Autowired
-    public ChampionshipServiceImpl(ChampionshipRepository championshipRepository,
-                                   PlayerRepository playerRepository,
-                                   GenericCache<Long, Championship> championshipCache)  {
-        this.championshipRepository = championshipRepository;
-        this.championshipMapper = new ChampionshipMapper(playerRepository);
-        this.playerRepository = playerRepository;
-        this.championshipCache = championshipCache;
-    }
-    @Override
-    @Logger
-    public ChampionshipDto createChampionship(ChampionshipDto championshipDto) {
-        if (championshipDto.getYear() < 1800 || championshipDto.getPlace().isEmpty()) {
-            throw new BadRequestException("Wrong championship parameters");
-        }
+  @Autowired
+  public ChampionshipServiceImpl(ChampionshipRepository championshipRepository,
+                                 PlayerRepository playerRepository,
+                                 GenericCache<Long, Championship> championshipCache) {
+    this.championshipRepository = championshipRepository;
+    this.championshipMapper = new ChampionshipMapper(playerRepository);
+    this.playerRepository = playerRepository;
+    this.championshipCache = championshipCache;
+  }
 
-        Championship championship = championshipMapper.mapToChampionship(championshipDto);
-        Championship savedChampionship = championshipRepository.save(championship);
-        return championshipMapper.mapToChampionshipDto(savedChampionship);
+  @Override
+  @Logger
+  public ChampionshipDto createChampionship(ChampionshipDto championshipDto) {
+    if (championshipDto.getYear() < 1800 || championshipDto.getPlace().isEmpty()) {
+      throw new BadRequestException("Wrong championship parameters");
     }
 
-    @Override
-    @Logger
-    public ChampionshipDto getChampionshipById(Long championshipId) {
-        Championship championship = championshipCache.get(championshipId).orElseGet(() -> championshipRepository.findById(championshipId).orElseThrow(() ->
-                new ResourceNotFoundException("Championship with ID " + championshipId + " does not exist.")));
-        return championshipMapper.mapToChampionshipDto(championship);
+    Championship championship = championshipMapper.mapToChampionship(championshipDto);
+    Championship savedChampionship = championshipRepository.save(championship);
+    return championshipMapper.mapToChampionshipDto(savedChampionship);
+  }
+
+  @Override
+  @Logger
+  public ChampionshipDto getChampionshipById(Long championshipId) {
+    Championship championship = championshipCache.get(championshipId)
+        .orElseGet(() -> championshipRepository.findById(championshipId).orElseThrow(() ->
+            new ResourceNotFoundException(
+                "Championship with ID " + championshipId + " does not exist.")));
+    return championshipMapper.mapToChampionshipDto(championship);
+  }
+
+  @Override
+  @Logger
+  public List<ChampionshipDto> getAllChampionships() {
+    List<Championship> championships = championshipRepository.findAll();
+    return championships.stream().map(championshipMapper::mapToChampionshipDto).toList();
+  }
+
+  @Override
+  @Logger
+  public ChampionshipDto updateChampionship(Long championshipId,
+                                            ChampionshipDto updateChampionship) {
+
+    if (updateChampionship.getYear() < 1800 || updateChampionship.getPlace().isEmpty()) {
+      throw new BadRequestException("Wrong championship parameters");
     }
 
-    @Override
-    @Logger
-    public List<ChampionshipDto> getAllChampionships() {
-        List<Championship> championships = championshipRepository.findAll();
-        return championships.stream().map(championshipMapper::mapToChampionshipDto).toList();
-    }
+    Championship championship = championshipMapper.mapToChampionship(updateChampionship);
+    championship.setId(championshipId);
 
-    @Override
-    @Logger
-    public ChampionshipDto updateChampionship(Long championshipId, ChampionshipDto updateChampionship) {
+    Championship updatedChampionshipObj = championshipRepository.save(championship);
+    return championshipMapper.mapToChampionshipDto(updatedChampionshipObj);
+  }
 
-        if (updateChampionship.getYear() < 1800 || updateChampionship.getPlace().isEmpty()) {
-            throw new BadRequestException("Wrong championship parameters");
-        }
+  @Override
+  @Logger
+  @Transactional
+  public void deleteChampionship(Long championshipId) {
+    Championship championship = championshipRepository.findById(championshipId)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "Championship not found with id " + championshipId));
 
-        Championship championship = championshipMapper.mapToChampionship(updateChampionship);
-        championship.setId(championshipId);
+    List<Player> playersToDelete = new ArrayList<>();
+    championship.getPlayers().forEach(player -> {
+      if (player.getChampionships().size() == 1) {
+        playersToDelete.add(player);
+      } else {
+        player.getChampionships().remove(championship);
+      }
+    });
 
-        Championship updatedChampionshipObj = championshipRepository.save(championship);
-        return championshipMapper.mapToChampionshipDto(updatedChampionshipObj);
-    }
+    playerRepository.saveAll(championship.getPlayers());
+    playerRepository.flush();
 
-    @Override
-    @Logger
-    @Transactional
-    public void deleteChampionship(Long championshipId) {
-        Championship championship = championshipRepository.findById(championshipId)
-                .orElseThrow(() -> new ResourceNotFoundException("Championship not found with id " + championshipId));
+    playerRepository.deleteAll(playersToDelete);
 
-        List<Player> playersToDelete = new ArrayList<>();
-        championship.getPlayers().forEach(player -> {
-            if (player.getChampionships().size() == 1) {
-                playersToDelete.add(player);
-            } else {
-                player.getChampionships().remove(championship);
-            }
-        });
+    championship.getPlayers().clear();
 
-        playerRepository.saveAll(championship.getPlayers());
-        playerRepository.flush();
+    championshipCache.remove(championshipId);
+    championshipRepository.delete(championship);
+  }
 
-        playerRepository.deleteAll(playersToDelete);
-
-        championship.getPlayers().clear();
-
-        championshipCache.remove(championshipId);
-        championshipRepository.delete(championship);
-    }
-
-    @Override
-    @Logger
-    public ChampionshipDto getChampionshipByYear(Integer year) {
-        Championship championship = championshipRepository.findByYear(year).orElseThrow(() ->
-                new ResourceNotFoundException("No championship took place in " + year + "."));
-        return championshipMapper.mapToChampionshipDto(championship);
-    }
+  @Override
+  @Logger
+  public ChampionshipDto getChampionshipByYear(Integer year) {
+    Championship championship = championshipRepository.findByYear(year).orElseThrow(() ->
+        new ResourceNotFoundException("No championship took place in " + year + "."));
+    return championshipMapper.mapToChampionshipDto(championship);
+  }
 }

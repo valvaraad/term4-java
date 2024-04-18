@@ -3,49 +3,51 @@ package com.gustavo.labjava.mapper;
 import com.gustavo.labjava.dto.CountryDto;
 import com.gustavo.labjava.model.*;
 import com.gustavo.labjava.repository.PlayerRepository;
-import lombok.NoArgsConstructor;
-
 import java.util.*;
 import java.util.stream.Collectors;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class CountryMapper {
 
-    PlayerRepository playerRepository;
-    public CountryMapper(PlayerRepository playerRepository) {
-        this.playerRepository = playerRepository;
+  PlayerRepository playerRepository;
+
+  public CountryMapper(PlayerRepository playerRepository) {
+    this.playerRepository = playerRepository;
+  }
+
+  public CountryDto mapToCountryDto(Country country) {
+
+    List<Player> players = country.getPlayers();
+    Set<Long> ids = null;
+
+    if (players != null) {
+      ids = players.stream().map(Player::getId).collect(Collectors.toSet());
     }
 
-    public CountryDto mapToCountryDto(Country country) {
 
-        List<Player> players = country.getPlayers();
-        Set<Long> ids = null;
+    return new CountryDto(
+        country.getId(),
+        country.getName(),
+        country.getCode(),
+        ids
+    );
+  }
 
-        if (players != null)
-            ids = players.stream().map(Player::getId).collect(Collectors.toSet());
+  public Country mapToCountry(CountryDto countryDto) {
 
+    Set<Long> ids = countryDto.getPlayerIds();
+    List<Player> players = null;
 
-        return new CountryDto(
-                country.getId(),
-                country.getName(),
-                country.getCode(),
-                ids
-        );
+    if (ids != null && this.playerRepository != null) {
+      players = this.playerRepository.findAllById(ids);
     }
 
-    public Country mapToCountry(CountryDto countryDto) {
-
-        Set<Long> ids = countryDto.getPlayerIds();
-        List<Player> players = null;
-
-        if (ids != null && this.playerRepository != null)
-            players = this.playerRepository.findAllById(ids);
-
-        return new Country(
-                countryDto.getId(),
-                countryDto.getName(),
-                countryDto.getCode(),
-                players
-        );
-    }
+    return new Country(
+        countryDto.getId(),
+        countryDto.getName(),
+        countryDto.getCode(),
+        players
+    );
+  }
 }

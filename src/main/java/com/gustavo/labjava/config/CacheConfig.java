@@ -6,9 +6,9 @@ import org.springframework.context.annotation.*;
 @Configuration
 public class CacheConfig<K, V> {
 
-    @Bean
-    @Scope("prototype")
-    public GenericCache<K, V> cache() {
-        return new SimpleCache<>();
-    }
+  @Bean
+  @Scope("prototype")
+  public GenericCache<K, V> cache() {
+    return new SimpleCache<>();
+  }
 }

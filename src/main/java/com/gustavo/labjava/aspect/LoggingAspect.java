@@ -13,34 +13,36 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Slf4j
 public class LoggingAspect {
-    @Pointcut("@annotation(com.gustavo.labjava.aspect.Logger)")
-    private void serviceLogging() {}
+  @SuppressWarnings("EmptyMethod")
+  @Pointcut("@annotation(com.gustavo.labjava.aspect.Logger)")
+  private void serviceLogging() {
+  }
 
-    @Around("serviceLogging()")
-    public Object logging(ProceedingJoinPoint joinPoint) throws Throwable {
-        String methodName = joinPoint.getSignature().getName();
-        Object[] args = joinPoint.getArgs();
-        log.info("Called method {}(); args: {}", methodName, args);
-        try {
-            Object output = joinPoint.proceed();
-            log.info("Method {} is returned; value: {}", methodName, output);
-            return output;
-        } catch (Throwable exception) {
-            log.error(
-                    "In the method {}() threw exception with message: {}",
-                    methodName,
-                    exception.getMessage());
-            throw exception;
-        }
+  @Around("serviceLogging()")
+  public Object logging(ProceedingJoinPoint joinPoint) throws Throwable {
+    String methodName = joinPoint.getSignature().getName();
+    Object[] args = joinPoint.getArgs();
+    log.info("Called method {}(); args: {}", methodName, args);
+    try {
+      Object output = joinPoint.proceed();
+      log.info("Method {} is returned; value: {}", methodName, output);
+      return output;
+    } catch (Throwable exception) {
+      log.error(
+          "In the method {}() threw exception with message: {}",
+          methodName,
+          exception.getMessage());
+      throw exception;
     }
+  }
 
-    @PostConstruct
-    public void initAspect() {
-        log.info("Aspect is initialized");
-    }
+  @PostConstruct
+  public void initAspect() {
+    log.info("Aspect is initialized");
+  }
 
-    @PreDestroy
-    public void destroyAspect() {
-        log.info("Aspect is destroyed");
-    }
+  @PreDestroy
+  public void destroyAspect() {
+    log.info("Aspect is destroyed");
+  }
 }

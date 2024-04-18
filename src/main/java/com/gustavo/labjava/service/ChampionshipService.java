@@ -1,23 +1,23 @@
 package com.gustavo.labjava.service;
 
 import com.gustavo.labjava.dto.ChampionshipDto;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public interface ChampionshipService {
 
-    ChampionshipDto createChampionship(ChampionshipDto championshipDto);
+  ChampionshipDto createChampionship(ChampionshipDto championshipDto);
 
-    ChampionshipDto getChampionshipById(Long championshipId);
+  ChampionshipDto getChampionshipById(Long championshipId);
 
-    List<ChampionshipDto> getAllChampionships();
+  List<ChampionshipDto> getAllChampionships();
 
-    ChampionshipDto updateChampionship(Long championshipId, ChampionshipDto updateChampionship);
+  ChampionshipDto updateChampionship(Long championshipId, ChampionshipDto updateChampionship);
 
-    void deleteChampionship(Long championshipId);
+  void deleteChampionship(Long championshipId);
 
-    ChampionshipDto getChampionshipByYear(Integer year);
+  ChampionshipDto getChampionshipByYear(Integer year);
 
 }

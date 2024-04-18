@@ -1,9 +1,8 @@
 package com.gustavo.labjava.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.List;
+import lombok.*;
 
 @Entity
 @Table(name = "players")
@@ -11,24 +10,24 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Player {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Long id;
 
-    @Column(name = "username")
-    private String username;
+  @Column(name = "username")
+  private String username;
 
-    @Column(name = "name")
-    private String name;
+  @Column(name = "name")
+  private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_id", referencedColumnName = "id")
-    private Country country;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "country_id", referencedColumnName = "id")
+  private Country country;
 
-    @ManyToMany
-    @JoinTable(name = "player_championship",
-            inverseJoinColumns = @JoinColumn(name = "championship_id", referencedColumnName = "id"),
-            joinColumns = @JoinColumn(name = "country_id", referencedColumnName = "id")
-    )
-    private List<Championship> championships;
+  @ManyToMany
+  @JoinTable(name = "player_championship",
+      inverseJoinColumns = @JoinColumn(name = "championship_id", referencedColumnName = "id"),
+      joinColumns = @JoinColumn(name = "country_id", referencedColumnName = "id")
+  )
+  private List<Championship> championships;
 }

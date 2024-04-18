@@ -1,8 +1,8 @@
 package com.gustavo.labjava.model;
-import jakarta.persistence.*;
-import lombok.*;
 
+import jakarta.persistence.*;
 import java.util.List;
+import lombok.*;
 
 @Entity
 @Data
@@ -10,16 +10,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Country {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Long id;
 
-    @Column(name = "name")
-    private String name;
+  @Column(name = "name")
+  private String name;
 
-    @Column(name = "code")
-    private String code;
+  @Column(name = "code")
+  private String code;
 
-    @OneToMany(mappedBy = "country", cascade = {CascadeType.ALL})
-    private List<Player> players;
+  @OneToMany(mappedBy = "country", cascade = {CascadeType.ALL})
+  private List<Player> players;
 }

@@ -1,9 +1,8 @@
 package com.gustavo.labjava.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.*;
+import lombok.*;
 
 @Entity
 @Data
@@ -11,17 +10,17 @@ import java.util.*;
 @AllArgsConstructor
 @Table(name = "\"championships\"")
 public class Championship {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Long id;
 
-    @Column(name = "year")
-    private Integer year;
+  @Column(name = "year")
+  private Integer year;
 
-    @Column(name = "place")
-    private String place;
+  @Column(name = "place")
+  private String place;
 
-    @ManyToMany(mappedBy = "championships", cascade = {CascadeType.ALL})
-    private List<Player> players;
+  @ManyToMany(mappedBy = "championships", cascade = {CascadeType.ALL})
+  private List<Player> players;
 
 }
