@@ -1,7 +1,6 @@
 package com.gustavo.labjava.controller;
 
 import com.gustavo.labjava.dto.CountryDto;
-import com.gustavo.labjava.dto.PlayerDto;
 import com.gustavo.labjava.service.CountryService;
 import java.util.List;
 import org.springframework.http.*;

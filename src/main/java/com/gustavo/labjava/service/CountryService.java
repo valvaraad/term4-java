@@ -1,7 +1,6 @@
 package com.gustavo.labjava.service;
 
 import com.gustavo.labjava.dto.CountryDto;
-import com.gustavo.labjava.dto.PlayerDto;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
