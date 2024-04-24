@@ -9,6 +9,8 @@ public interface PlayerService {
 
   PlayerDto createPlayer(PlayerDto playerDto);
 
+  List<PlayerDto> createPlayers(List<PlayerDto> playerDtos);
+
   PlayerDto getPlayerById(Long playerId);
 
   List<PlayerDto> getAllPlayers();

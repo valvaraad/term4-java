@@ -23,6 +23,7 @@ public class PlayerServiceImpl implements PlayerService {
   private ChampionshipRepository championshipRepository;
   private PlayerMapper playerMapper;
   private GenericCache<Long, Player> playerCache;
+  String wrongParameters = "Wrong player parameters";
 
   @Autowired
   public PlayerServiceImpl(PlayerRepository playerRepository, CountryRepository countryRepository,
@@ -39,12 +40,24 @@ public class PlayerServiceImpl implements PlayerService {
   @Logger
   public PlayerDto createPlayer(PlayerDto playerDto) {
     if (playerDto.getName().isEmpty() || playerDto.getUsername().isEmpty()) {
-      throw new BadRequestException("Wrong player parameters");
+      throw new BadRequestException(wrongParameters);
     }
 
     Player player = playerMapper.mapToPlayer(playerDto);
     Player savedPlayer = playerRepository.save(player);
     return playerMapper.mapToPlayerDto(savedPlayer);
+  }
+
+  @Override
+  @Logger
+  public List<PlayerDto> createPlayers(List<PlayerDto> playerDtos) {
+    if (playerDtos.stream().anyMatch(p -> (p.getName().isEmpty() || p.getUsername().isEmpty()))) {
+      throw new BadRequestException(wrongParameters);
+    }
+
+    return playerDtos.stream()
+        .map(p -> playerRepository.save(playerMapper.mapToPlayer(p)))
+        .map(p -> playerMapper.mapToPlayerDto(p)).toList();
   }
 
   @Override
@@ -71,7 +84,7 @@ public class PlayerServiceImpl implements PlayerService {
   public PlayerDto updatePlayer(Long playerId, PlayerDto updatedPlayer) {
 
     if (updatedPlayer.getUsername().isEmpty() || updatedPlayer.getName().isEmpty()) {
-      throw new BadRequestException("Wrong player parameters");
+      throw new BadRequestException(wrongParameters);
     }
 
     Player player = playerCache.get(playerId).orElseGet(() -> playerRepository.findById(playerId)
@@ -87,7 +100,7 @@ public class PlayerServiceImpl implements PlayerService {
     player.setCountry(country);
 
     Set<Long> champIds = updatedPlayer.getChampionshipIds();
-    List<Championship> championships = null;
+    List<Championship> championships = Collections.emptyList();
     if (champIds != null) {
       championships = championshipRepository.findAllById(champIds);
     }

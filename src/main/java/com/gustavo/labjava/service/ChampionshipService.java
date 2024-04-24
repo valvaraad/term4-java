@@ -1,6 +1,7 @@
 package com.gustavo.labjava.service;
 
 import com.gustavo.labjava.dto.ChampionshipDto;
+import com.gustavo.labjava.dto.PlayerDto;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 public interface ChampionshipService {
 
   ChampionshipDto createChampionship(ChampionshipDto championshipDto);
+
+  List<ChampionshipDto> createChampionships(List<ChampionshipDto> championshipDtos);
 
   ChampionshipDto getChampionshipById(Long championshipId);
 

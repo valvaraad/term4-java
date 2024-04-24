@@ -1,6 +1,7 @@
 package com.gustavo.labjava.controller;
 
 import com.gustavo.labjava.dto.CountryDto;
+import com.gustavo.labjava.dto.PlayerDto;
 import com.gustavo.labjava.service.CountryService;
 import java.util.List;
 import org.springframework.http.*;
@@ -20,6 +21,12 @@ public class CountryController {
   public ResponseEntity<CountryDto> createCountry(@RequestBody CountryDto countryDto) {
     CountryDto savedCountry = countryService.createCountry(countryDto);
     return new ResponseEntity<>(savedCountry, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/createbulk")
+  public ResponseEntity<List<CountryDto>> createPlayers(@RequestBody List<CountryDto> countryDtos) {
+    List<CountryDto> savedCountries = countryService.createCountries(countryDtos);
+    return new ResponseEntity<>(savedCountries, HttpStatus.CREATED);
   }
 
   @GetMapping("{id}")

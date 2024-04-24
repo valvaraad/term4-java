@@ -26,6 +26,12 @@ public class PlayerController {
     return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
   }
 
+  @PostMapping("/createbulk")
+  public ResponseEntity<List<PlayerDto>> createPlayers(@RequestBody List<PlayerDto> playerDtos) {
+    List<PlayerDto> savedPlayers = playerService.createPlayers(playerDtos);
+    return new ResponseEntity<>(savedPlayers, HttpStatus.CREATED);
+  }
+
   @GetMapping("{id}")
   public ResponseEntity<PlayerDto> getPlayerById(@PathVariable("id") Long playerId) {
     PlayerDto playerDto = playerService.getPlayerById(playerId);

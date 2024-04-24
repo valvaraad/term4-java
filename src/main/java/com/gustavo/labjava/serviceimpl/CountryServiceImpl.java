@@ -18,6 +18,7 @@ public class CountryServiceImpl implements CountryService {
   private final CountryRepository countryRepository;
   private final CountryMapper countryMapper;
   private final GenericCache<Long, Country> countryCache;
+  String wrongParameters = "Wrong country parameters";
 
   @Autowired
   public CountryServiceImpl(CountryRepository countryRepository,
@@ -32,12 +33,24 @@ public class CountryServiceImpl implements CountryService {
   public CountryDto createCountry(CountryDto countryDto) {
 
     if (countryDto.getCode().isEmpty() || countryDto.getName().isEmpty()) {
-      throw new BadRequestException("Wrong country parameters");
+      throw new BadRequestException(wrongParameters);
     }
 
     Country country = countryMapper.mapToCountry(countryDto);
     Country savedCountry = countryRepository.save(country);
     return countryMapper.mapToCountryDto(savedCountry);
+  }
+
+  @Override
+  @Logger
+  public List<CountryDto> createCountries(List<CountryDto> countryDtos) {
+    if (countryDtos.stream().anyMatch(c -> (c.getName().isEmpty() || c.getCode().isEmpty()))) {
+      throw new BadRequestException(wrongParameters);
+    }
+
+    return countryDtos.stream()
+        .map(c -> countryRepository.save(countryMapper.mapToCountry(c)))
+        .map(c -> countryMapper.mapToCountryDto(c)).toList();
   }
 
   @Override
@@ -61,7 +74,7 @@ public class CountryServiceImpl implements CountryService {
   public CountryDto updateCountry(Long countryId, CountryDto updateCountry) {
 
     if (updateCountry.getName().isEmpty() || updateCountry.getCode().isEmpty()) {
-      throw new BadRequestException("Wrong country parameters");
+      throw new BadRequestException(wrongParameters);
     }
 
     Country country = countryCache.get(countryId)

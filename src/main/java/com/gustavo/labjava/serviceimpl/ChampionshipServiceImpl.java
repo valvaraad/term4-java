@@ -21,6 +21,7 @@ public class ChampionshipServiceImpl implements ChampionshipService {
   private final ChampionshipMapper championshipMapper;
   private final GenericCache<Long, Championship> championshipCache;
   private final PlayerRepository playerRepository;
+  String wrongParameters = "Wrong championship parameters";
 
   @Autowired
   public ChampionshipServiceImpl(ChampionshipRepository championshipRepository,
@@ -36,7 +37,7 @@ public class ChampionshipServiceImpl implements ChampionshipService {
   @Logger
   public ChampionshipDto createChampionship(ChampionshipDto championshipDto) {
     if (championshipDto.getYear() < 1800 || championshipDto.getPlace().isEmpty()) {
-      throw new BadRequestException("Wrong championship parameters");
+      throw new BadRequestException(wrongParameters);
     }
 
     Championship championship = championshipMapper.mapToChampionship(championshipDto);
@@ -46,11 +47,25 @@ public class ChampionshipServiceImpl implements ChampionshipService {
 
   @Override
   @Logger
+  public List<ChampionshipDto> createChampionships(List<ChampionshipDto> championshipDtos) {
+    if (championshipDtos.stream().anyMatch(c -> (c.getPlace().isEmpty() || c.getYear() < 1800))) {
+      throw new BadRequestException(wrongParameters);
+    }
+
+    return championshipDtos.stream()
+        .map(c -> championshipRepository.save(championshipMapper.mapToChampionship(c)))
+        .map(c -> championshipMapper.mapToChampionshipDto(c)).toList();
+  }
+
+
+  @Override
+  @Logger
   public ChampionshipDto getChampionshipById(Long championshipId) {
     Championship championship = championshipCache.get(championshipId)
         .orElseGet(() -> championshipRepository.findById(championshipId).orElseThrow(() ->
             new ResourceNotFoundException(
                 "Championship with ID " + championshipId + " does not exist.")));
+    championshipCache.put(championshipId, championship);
     return championshipMapper.mapToChampionshipDto(championship);
   }
 
@@ -67,11 +82,16 @@ public class ChampionshipServiceImpl implements ChampionshipService {
                                             ChampionshipDto updateChampionship) {
 
     if (updateChampionship.getYear() < 1800 || updateChampionship.getPlace().isEmpty()) {
-      throw new BadRequestException("Wrong championship parameters");
+      throw new BadRequestException(wrongParameters);
     }
 
-    Championship championship = championshipMapper.mapToChampionship(updateChampionship);
+    Championship championship = championshipRepository.findById(championshipId)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "Championship with ID " + championshipId + " does not exist."));
+
     championship.setId(championshipId);
+    championship.setYear(updateChampionship.getYear());
+    championship.setPlace(updateChampionship.getPlace());
 
     Championship updatedChampionshipObj = championshipRepository.save(championship);
     return championshipMapper.mapToChampionshipDto(updatedChampionshipObj);
@@ -85,24 +105,27 @@ public class ChampionshipServiceImpl implements ChampionshipService {
         .orElseThrow(() -> new ResourceNotFoundException(
             "Championship not found with id " + championshipId));
 
-    List<Player> playersToDelete = new ArrayList<>();
-    championship.getPlayers().forEach(player -> {
-      if (player.getChampionships().size() == 1) {
-        playersToDelete.add(player);
-      } else {
-        player.getChampionships().remove(championship);
-      }
-    });
+    if (championship.getPlayers() != null) {
+      List<Player> playersToDelete = new ArrayList<>();
+      championship.getPlayers().forEach(player -> {
+        if (player.getChampionships().size() == 1) {
+          playersToDelete.add(player);
+        } else {
+          player.getChampionships().remove(championship);
+        }
+      });
 
-    playerRepository.saveAll(championship.getPlayers());
-    playerRepository.flush();
 
-    playerRepository.deleteAll(playersToDelete);
+      playerRepository.saveAll(championship.getPlayers());
+      playerRepository.flush();
 
-    championship.getPlayers().clear();
+      playerRepository.deleteAll(playersToDelete);
+
+      championship.getPlayers().clear();
+    }
 
     championshipCache.remove(championshipId);
-    championshipRepository.delete(championship);
+    championshipRepository.deleteById(championshipId);
   }
 
   @Override

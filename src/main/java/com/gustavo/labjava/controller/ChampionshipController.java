@@ -23,6 +23,14 @@ public class ChampionshipController {
     return new ResponseEntity<>(savedChampionship, HttpStatus.CREATED);
   }
 
+  @PostMapping("/createbulk")
+  public ResponseEntity<List<ChampionshipDto>> createChampionships(
+      @RequestBody List<ChampionshipDto> championshipDtos) {
+    List<ChampionshipDto> savedChampionships = championshipService
+        .createChampionships(championshipDtos);
+    return new ResponseEntity<>(savedChampionships, HttpStatus.CREATED);
+  }
+
   @GetMapping("{id}")
   public ResponseEntity<ChampionshipDto> getChampionshipById(
       @PathVariable("id") Long championshipId) {
