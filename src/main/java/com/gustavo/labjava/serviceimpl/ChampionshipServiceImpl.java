@@ -54,7 +54,7 @@ public class ChampionshipServiceImpl implements ChampionshipService {
 
     return championshipDtos.stream()
         .map(c -> championshipRepository.save(championshipMapper.mapToChampionship(c)))
-        .map(c -> championshipMapper.mapToChampionshipDto(c)).toList();
+        .map(championshipMapper::mapToChampionshipDto).toList();
   }
 
 

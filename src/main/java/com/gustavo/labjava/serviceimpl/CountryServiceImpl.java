@@ -50,7 +50,7 @@ public class CountryServiceImpl implements CountryService {
 
     return countryDtos.stream()
         .map(c -> countryRepository.save(countryMapper.mapToCountry(c)))
-        .map(c -> countryMapper.mapToCountryDto(c)).toList();
+        .map(countryMapper::mapToCountryDto).toList();
   }
 
   @Override
