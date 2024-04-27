@@ -1,6 +1,7 @@
 package com.gustavo.labjava.controller;
 
 import com.gustavo.labjava.dto.CountryDto;
+import com.gustavo.labjava.service.CounterService;
 import com.gustavo.labjava.service.CountryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,9 @@ class CountryControllerTests {
   @Mock
   private CountryService countryService;
 
+  @Mock
+  private CounterService requestCounter;
+
   @BeforeEach
   public void setup() {
     MockitoAnnotations.openMocks(this);
@@ -32,6 +36,7 @@ class CountryControllerTests {
   void testCreateCountry() {
     CountryDto countryDto = new CountryDto();
     when(countryService.createCountry(countryDto)).thenReturn(countryDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<CountryDto> response = countryController.createCountry(countryDto);
 
@@ -42,6 +47,7 @@ class CountryControllerTests {
   void testCreateCountries() {
     List<CountryDto> countryDtos = Arrays.asList(new CountryDto(), new CountryDto());
     when(countryService.createCountries(countryDtos)).thenReturn(countryDtos);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<List<CountryDto>> response = countryController.createPlayers(countryDtos);
 
@@ -52,6 +58,7 @@ class CountryControllerTests {
   void testGetCountryById() {
     CountryDto countryDto = new CountryDto();
     when(countryService.getCountryById(1L)).thenReturn(countryDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<CountryDto> response = countryController.getCountryById(1L);
 
@@ -62,6 +69,7 @@ class CountryControllerTests {
   void testGetAllCountries() {
     List<CountryDto> countryDtos = Arrays.asList(new CountryDto(), new CountryDto());
     when(countryService.getAllCountries()).thenReturn(countryDtos);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<List<CountryDto>> response = countryController.getAllCountries();
 
@@ -70,9 +78,9 @@ class CountryControllerTests {
 
   @Test
   void testUpdateCountry() {
-    CountryDto originalCountryDto = new CountryDto();
     CountryDto updatedCountryDto = new CountryDto();
     when(countryService.updateCountry(1L, updatedCountryDto)).thenReturn(updatedCountryDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<CountryDto> response = countryController.updateCountry(1L, updatedCountryDto);
 
@@ -83,6 +91,7 @@ class CountryControllerTests {
   void testDeleteCountry() {
     Long countryId = 1L;
     doNothing().when(countryService).deleteCountry(countryId);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<String> response = countryController.deleteCountry(countryId);
 

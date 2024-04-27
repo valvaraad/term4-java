@@ -36,6 +36,7 @@ class PlayerServiceTests {
   @Mock
   private GenericCache<Long, Player> playerCache;
 
+
   @Mock
   private PlayerMapper playerMapper;
 

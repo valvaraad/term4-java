@@ -2,6 +2,7 @@ package com.gustavo.labjava.controller;
 
 import com.gustavo.labjava.dto.ChampionshipDto;
 import com.gustavo.labjava.service.ChampionshipService;
+import com.gustavo.labjava.service.CounterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,6 +24,9 @@ class ChampionshipControllerTests {
   @Mock
   private ChampionshipService championshipService;
 
+  @Mock
+  private CounterService requestCounter;
+
   @BeforeEach
   public void setup() {
     MockitoAnnotations.openMocks(this);
@@ -32,6 +36,7 @@ class ChampionshipControllerTests {
   void testCreateChampionship() {
     ChampionshipDto championshipDto = new ChampionshipDto();
     when(championshipService.createChampionship(championshipDto)).thenReturn(championshipDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<ChampionshipDto> response = championshipController.createChampionship(championshipDto);
 
@@ -42,6 +47,7 @@ class ChampionshipControllerTests {
   void testCreateChampionships() {
     List<ChampionshipDto> championshipDtos = Arrays.asList(new ChampionshipDto(), new ChampionshipDto());
     when(championshipService.createChampionships(championshipDtos)).thenReturn(championshipDtos);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<List<ChampionshipDto>> response = championshipController.createChampionships(championshipDtos);
 
@@ -52,6 +58,7 @@ class ChampionshipControllerTests {
   void testGetChampionshipById() {
     ChampionshipDto championshipDto = new ChampionshipDto();
     when(championshipService.getChampionshipById(1L)).thenReturn(championshipDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<ChampionshipDto> response = championshipController.getChampionshipById(1L);
 
@@ -62,6 +69,7 @@ class ChampionshipControllerTests {
   void testGetAllChampionships() {
     List<ChampionshipDto> championshipDtos = Arrays.asList(new ChampionshipDto(), new ChampionshipDto());
     when(championshipService.getAllChampionships()).thenReturn(championshipDtos);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<List<ChampionshipDto>> response = championshipController.getAllChampionships();
 
@@ -72,6 +80,7 @@ class ChampionshipControllerTests {
   void testGetChampionshipByYear() {
     ChampionshipDto championshipDto = new ChampionshipDto();
     when(championshipService.getChampionshipByYear(2022)).thenReturn(championshipDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<ChampionshipDto> response = championshipController.getChampionshipByYear(2022);
 
@@ -83,6 +92,7 @@ class ChampionshipControllerTests {
     ChampionshipDto originalChampionshipDto = new ChampionshipDto();
     ChampionshipDto updatedChampionshipDto = new ChampionshipDto();
     when(championshipService.updateChampionship(1L, updatedChampionshipDto)).thenReturn(updatedChampionshipDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<ChampionshipDto> response = championshipController.updateChampionship(1L, updatedChampionshipDto);
 
@@ -93,6 +103,7 @@ class ChampionshipControllerTests {
   void testDeleteChampionship() {
     Long championshipId = 1L;
     doNothing().when(championshipService).deleteChampionship(championshipId);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<String> response = championshipController.deleteChampionship(championshipId);
 

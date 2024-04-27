@@ -1,6 +1,7 @@
 package com.gustavo.labjava.controller;
 
 import com.gustavo.labjava.dto.PlayerDto;
+import com.gustavo.labjava.service.CounterService;
 import com.gustavo.labjava.service.PlayerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,9 @@ class PlayerControllerTests {
   @Mock
   PlayerService playerService;
 
+  @Mock
+  private CounterService requestCounter;
+
   @BeforeEach
   public void setup() {
     MockitoAnnotations.openMocks(this);
@@ -33,6 +37,7 @@ class PlayerControllerTests {
   void testGetAllPlayers() {
     List<PlayerDto> playerDtos = Arrays.asList(new PlayerDto(), new PlayerDto());
     when(playerService.getAllPlayers()).thenReturn(playerDtos);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<List<PlayerDto>> response = playerController.getAllPlayers();
 
@@ -43,6 +48,7 @@ class PlayerControllerTests {
   void testGetPlayerById() {
     PlayerDto playerDto = new PlayerDto();
     when(playerService.getPlayerById(1L)).thenReturn(playerDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<PlayerDto> response = playerController.getPlayerById(1L);
 
@@ -53,6 +59,7 @@ class PlayerControllerTests {
   void testCreatePlayer() {
     PlayerDto playerDto = new PlayerDto();
     when(playerService.createPlayer(playerDto)).thenReturn(playerDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<PlayerDto> response = playerController.createPlayer(playerDto);
 
@@ -63,6 +70,7 @@ class PlayerControllerTests {
   void testCreatePlayers() {
     List<PlayerDto> playerDtos = Arrays.asList(new PlayerDto(), new PlayerDto());
     when(playerService.createPlayers(playerDtos)).thenReturn(playerDtos);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<List<PlayerDto>> response = playerController.createPlayers(playerDtos);
 
@@ -71,9 +79,9 @@ class PlayerControllerTests {
 
   @Test
   void testUpdatePlayer() {
-    PlayerDto originalPlayerDto = new PlayerDto();
     PlayerDto updatedPlayerDto = new PlayerDto();
     when(playerService.updatePlayer(1L, updatedPlayerDto)).thenReturn(updatedPlayerDto);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<PlayerDto> response = playerController.updatePlayer(1L, updatedPlayerDto);
 
@@ -84,6 +92,7 @@ class PlayerControllerTests {
   void testDeletePlayer() {
     Long playerId = 1L;
     doNothing().when(playerService).deletePlayer(playerId);
+    doNothing().when(requestCounter).increment();
 
     ResponseEntity<String> response = playerController.deletePlayer(playerId);
 
