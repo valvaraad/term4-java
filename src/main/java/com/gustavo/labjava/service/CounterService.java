@@ -1,11 +1,15 @@
 package com.gustavo.labjava.service;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.stereotype.Service;
 
-public interface CounterService {
+@Service
+public class CounterService {
   static AtomicInteger requestCounter = new AtomicInteger(0);
 
-  public void increment();
+  public void increment() {
+    requestCounter.incrementAndGet();
+  }
 
   public static int get() {
     return requestCounter.get();
