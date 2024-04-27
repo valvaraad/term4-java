@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChampionshipRepository extends JpaRepository<Championship, Long> {
-  @Query("SELECT c FROM Championship c WHERE c.year = ?1")
+  @Query("SELECT c FROM Championship c WHERE c.year = :year")
   Optional<Championship> findByYear(Integer year);
 
 }

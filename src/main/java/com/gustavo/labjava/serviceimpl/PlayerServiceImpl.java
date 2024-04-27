@@ -55,9 +55,13 @@ public class PlayerServiceImpl implements PlayerService {
       throw new BadRequestException(wrongParameters);
     }
 
-    return playerDtos.stream()
-        .map(p -> playerRepository.save(playerMapper.mapToPlayer(p)))
-        .map(p -> playerMapper.mapToPlayerDto(p)).toList();
+    try {
+      return playerDtos.stream()
+          .map(p -> playerRepository.save(playerMapper.mapToPlayer(p)))
+          .map(p -> playerMapper.mapToPlayerDto(p)).toList();
+    } catch (Exception e) {
+      throw new ServerException("Internal server error occured while saving player.");
+    }
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.gustavo.labjava.aspect;
 
+import com.gustavo.labjava.service.CounterService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,8 @@ public class LoggingAspect {
     try {
       Object output = joinPoint.proceed();
       log.info("Method {} is returned; value: {}", methodName, output);
+      int requestCount = CounterService.get();
+      log.info("Current count of requests: {}", requestCount);
       return output;
     } catch (Throwable exception) {
       log.error(
