@@ -108,7 +108,8 @@ public class ChampionshipServiceImpl implements ChampionshipService {
   @Override
   @Logger
   @Transactional
-  public void deleteChampionship(Long championshipId) throws ServerException {
+  public void deleteChampionship(Long championshipId) throws ServerException,
+      ResourceNotFoundException {
     Championship championship = championshipRepository.findById(championshipId)
         .orElseThrow(() -> new ServerException(
             "Championship not found with id " + championshipId));

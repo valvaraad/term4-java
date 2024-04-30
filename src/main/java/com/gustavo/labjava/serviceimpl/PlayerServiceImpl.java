@@ -124,7 +124,7 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Override
   @Logger
-  public void deletePlayer(Long playerId) throws ServerException {
+  public void deletePlayer(Long playerId) throws ServerException, ResourceNotFoundException {
 
     if (playerRepository.findById(playerId).isEmpty()) {
       throw new ServerException("There is no player with given ID: " + playerId);

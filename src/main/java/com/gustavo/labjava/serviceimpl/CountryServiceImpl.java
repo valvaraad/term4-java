@@ -92,7 +92,7 @@ public class CountryServiceImpl implements CountryService {
 
   @Override
   @Logger
-  public void deleteCountry(Long countryId) throws ServerException {
+  public void deleteCountry(Long countryId) throws ServerException, ResourceNotFoundException {
 
     if (countryRepository.findById(countryId).isEmpty()) {
       throw new ServerException("There is no country with given ID: " + countryId);
