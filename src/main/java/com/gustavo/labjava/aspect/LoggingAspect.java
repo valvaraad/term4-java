@@ -35,6 +35,8 @@ public class LoggingAspect {
           "In the method {}() threw exception with message: {}",
           methodName,
           exception.getMessage());
+      int requestCountInCatch = CounterService.get();
+      log.info("Current count of requests: {}", requestCountInCatch);
       throw exception;
     }
   }

@@ -72,7 +72,7 @@ public class CountryServiceImpl implements CountryService {
   @Override
   @Logger
   public CountryDto updateCountry(Long countryId, CountryDto updateCountry)
-      throws BadRequestException {
+      throws BadRequestException, ResourceNotFoundException {
 
     if (updateCountry.getName().isEmpty() || updateCountry.getCode().isEmpty()) {
       throw new BadRequestException(wrongParameters);

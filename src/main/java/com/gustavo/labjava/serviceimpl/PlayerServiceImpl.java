@@ -50,7 +50,8 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Override
   @Logger
-  public List<PlayerDto> createPlayers(List<PlayerDto> playerDtos) throws ServerException {
+  public List<PlayerDto> createPlayers(List<PlayerDto> playerDtos) throws BadRequestException,
+      ServerException {
     if (playerDtos.stream().anyMatch(p -> (p.getName().isEmpty() || p.getUsername().isEmpty()))) {
       throw new BadRequestException(wrongParameters);
     }
@@ -86,7 +87,7 @@ public class PlayerServiceImpl implements PlayerService {
   @Override
   @Logger
   public PlayerDto updatePlayer(Long playerId, PlayerDto updatedPlayer)
-      throws ResourceNotFoundException {
+      throws ResourceNotFoundException, BadRequestException, ServerException {
     if (updatedPlayer.getUsername().isEmpty() || updatedPlayer.getName().isEmpty()) {
       throw new BadRequestException(wrongParameters);
     }

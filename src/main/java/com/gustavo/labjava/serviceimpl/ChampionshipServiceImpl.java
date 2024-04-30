@@ -87,7 +87,7 @@ public class ChampionshipServiceImpl implements ChampionshipService {
   @Logger
   public ChampionshipDto updateChampionship(Long championshipId,
                                             ChampionshipDto updateChampionship)
-      throws ResourceNotFoundException {
+      throws ResourceNotFoundException, BadRequestException {
 
     if (updateChampionship.getYear() < 1800 || updateChampionship.getPlace().isEmpty()) {
       throw new BadRequestException(wrongParameters);
