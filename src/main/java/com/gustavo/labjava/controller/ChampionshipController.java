@@ -14,6 +14,7 @@ public class ChampionshipController {
   private final ChampionshipService championshipService;
   private final CounterService requestCounter;
 
+  //ChampionshipController:17 - on-purpose checkstyle violation
   public ChampionshipController(ChampionshipService championshipService, CounterService requestCounter) {
     this.championshipService = championshipService;
     this.requestCounter = requestCounter;

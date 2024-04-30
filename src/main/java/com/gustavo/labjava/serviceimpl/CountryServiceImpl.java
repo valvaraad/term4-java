@@ -30,7 +30,7 @@ public class CountryServiceImpl implements CountryService {
 
   @Override
   @Logger
-  public CountryDto createCountry(CountryDto countryDto) {
+  public CountryDto createCountry(CountryDto countryDto) throws BadRequestException {
 
     if (countryDto.getCode().isEmpty() || countryDto.getName().isEmpty()) {
       throw new BadRequestException(wrongParameters);
@@ -43,7 +43,7 @@ public class CountryServiceImpl implements CountryService {
 
   @Override
   @Logger
-  public List<CountryDto> createCountries(List<CountryDto> countryDtos) {
+  public List<CountryDto> createCountries(List<CountryDto> countryDtos) throws BadRequestException {
     if (countryDtos.stream().anyMatch(c -> (c.getName().isEmpty() || c.getCode().isEmpty()))) {
       throw new BadRequestException(wrongParameters);
     }
@@ -55,7 +55,7 @@ public class CountryServiceImpl implements CountryService {
 
   @Override
   @Logger
-  public CountryDto getCountryById(Long countryId) {
+  public CountryDto getCountryById(Long countryId) throws ResourceNotFoundException {
     Country country = countryCache.get(countryId)
         .orElseGet(() -> countryRepository.findById(countryId).orElseThrow(() ->
             new ResourceNotFoundException("Country with ID " + countryId + " does not exist.")));
@@ -71,7 +71,8 @@ public class CountryServiceImpl implements CountryService {
 
   @Override
   @Logger
-  public CountryDto updateCountry(Long countryId, CountryDto updateCountry) {
+  public CountryDto updateCountry(Long countryId, CountryDto updateCountry)
+      throws BadRequestException {
 
     if (updateCountry.getName().isEmpty() || updateCountry.getCode().isEmpty()) {
       throw new BadRequestException(wrongParameters);
@@ -91,10 +92,10 @@ public class CountryServiceImpl implements CountryService {
 
   @Override
   @Logger
-  public void deleteCountry(Long countryId) {
+  public void deleteCountry(Long countryId) throws ServerException {
 
     if (countryRepository.findById(countryId).isEmpty()) {
-      throw new ResourceNotFoundException("There is no country with given ID: " + countryId);
+      throw new ServerException("There is no country with given ID: " + countryId);
     }
 
     countryCache.remove(countryId);

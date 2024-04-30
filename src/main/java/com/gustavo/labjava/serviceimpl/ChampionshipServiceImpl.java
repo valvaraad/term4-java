@@ -4,6 +4,7 @@ import com.gustavo.labjava.aspect.Logger;
 import com.gustavo.labjava.dto.ChampionshipDto;
 import com.gustavo.labjava.exception.BadRequestException;
 import com.gustavo.labjava.exception.ResourceNotFoundException;
+import com.gustavo.labjava.exception.ServerException;
 import com.gustavo.labjava.mapper.ChampionshipMapper;
 import com.gustavo.labjava.model.*;
 import com.gustavo.labjava.repository.*;
@@ -35,9 +36,14 @@ public class ChampionshipServiceImpl implements ChampionshipService {
 
   @Override
   @Logger
-  public ChampionshipDto createChampionship(ChampionshipDto championshipDto) {
+  public ChampionshipDto createChampionship(ChampionshipDto championshipDto)
+      throws BadRequestException {
     if (championshipDto.getYear() < 1800 || championshipDto.getPlace().isEmpty()) {
       throw new BadRequestException(wrongParameters);
+    }
+
+    if (championshipRepository.findByYear(championshipDto.getYear()).isPresent()) {
+      throw new BadRequestException("This year already has a championship.");
     }
 
     Championship championship = championshipMapper.mapToChampionship(championshipDto);
@@ -47,7 +53,8 @@ public class ChampionshipServiceImpl implements ChampionshipService {
 
   @Override
   @Logger
-  public List<ChampionshipDto> createChampionships(List<ChampionshipDto> championshipDtos) {
+  public List<ChampionshipDto> createChampionships(List<ChampionshipDto> championshipDtos)
+      throws BadRequestException {
     if (championshipDtos.stream().anyMatch(c -> (c.getPlace().isEmpty() || c.getYear() < 1800))) {
       throw new BadRequestException(wrongParameters);
     }
@@ -60,7 +67,7 @@ public class ChampionshipServiceImpl implements ChampionshipService {
 
   @Override
   @Logger
-  public ChampionshipDto getChampionshipById(Long championshipId) {
+  public ChampionshipDto getChampionshipById(Long championshipId) throws ResourceNotFoundException {
     Championship championship = championshipCache.get(championshipId)
         .orElseGet(() -> championshipRepository.findById(championshipId).orElseThrow(() ->
             new ResourceNotFoundException(
@@ -79,7 +86,8 @@ public class ChampionshipServiceImpl implements ChampionshipService {
   @Override
   @Logger
   public ChampionshipDto updateChampionship(Long championshipId,
-                                            ChampionshipDto updateChampionship) {
+                                            ChampionshipDto updateChampionship)
+      throws ResourceNotFoundException {
 
     if (updateChampionship.getYear() < 1800 || updateChampionship.getPlace().isEmpty()) {
       throw new BadRequestException(wrongParameters);
@@ -100,9 +108,9 @@ public class ChampionshipServiceImpl implements ChampionshipService {
   @Override
   @Logger
   @Transactional
-  public void deleteChampionship(Long championshipId) {
+  public void deleteChampionship(Long championshipId) throws ServerException {
     Championship championship = championshipRepository.findById(championshipId)
-        .orElseThrow(() -> new ResourceNotFoundException(
+        .orElseThrow(() -> new ServerException(
             "Championship not found with id " + championshipId));
 
     if (championship.getPlayers() != null) {
@@ -130,7 +138,7 @@ public class ChampionshipServiceImpl implements ChampionshipService {
 
   @Override
   @Logger
-  public ChampionshipDto getChampionshipByYear(Integer year) {
+  public ChampionshipDto getChampionshipByYear(Integer year) throws ResourceNotFoundException {
     Championship championship = championshipRepository.findByYear(year).orElseThrow(() ->
         new ResourceNotFoundException("No championship took place in " + year + "."));
     return championshipMapper.mapToChampionshipDto(championship);

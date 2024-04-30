@@ -38,7 +38,7 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Override
   @Logger
-  public PlayerDto createPlayer(PlayerDto playerDto) {
+  public PlayerDto createPlayer(PlayerDto playerDto) throws BadRequestException {
     if (playerDto.getName().isEmpty() || playerDto.getUsername().isEmpty()) {
       throw new BadRequestException(wrongParameters);
     }
@@ -50,7 +50,7 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Override
   @Logger
-  public List<PlayerDto> createPlayers(List<PlayerDto> playerDtos) {
+  public List<PlayerDto> createPlayers(List<PlayerDto> playerDtos) throws ServerException {
     if (playerDtos.stream().anyMatch(p -> (p.getName().isEmpty() || p.getUsername().isEmpty()))) {
       throw new BadRequestException(wrongParameters);
     }
@@ -60,13 +60,13 @@ public class PlayerServiceImpl implements PlayerService {
           .map(p -> playerRepository.save(playerMapper.mapToPlayer(p)))
           .map(p -> playerMapper.mapToPlayerDto(p)).toList();
     } catch (Exception e) {
-      throw new ServerException("Internal server error occured while saving player.");
+      throw new ServerException("Internal server error occurred while saving player.");
     }
   }
 
   @Override
   @Logger
-  public PlayerDto getPlayerById(Long playerId) {
+  public PlayerDto getPlayerById(Long playerId) throws ResourceNotFoundException {
 
     Player player = playerCache.get(playerId).orElseGet(() -> playerRepository.findById(playerId)
         .orElseThrow(() -> new ResourceNotFoundException(
@@ -85,8 +85,8 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Override
   @Logger
-  public PlayerDto updatePlayer(Long playerId, PlayerDto updatedPlayer) {
-
+  public PlayerDto updatePlayer(Long playerId, PlayerDto updatedPlayer)
+      throws ResourceNotFoundException {
     if (updatedPlayer.getUsername().isEmpty() || updatedPlayer.getName().isEmpty()) {
       throw new BadRequestException(wrongParameters);
     }
@@ -114,16 +114,19 @@ public class PlayerServiceImpl implements PlayerService {
     Player updatedPlayerObj = playerRepository.save(player);
 
     playerCache.remove(playerId);
-
-    return playerMapper.mapToPlayerDto(updatedPlayerObj);
+    try {
+      return playerMapper.mapToPlayerDto(updatedPlayerObj);
+    } catch (Exception e) {
+      throw new ServerException("Failed to update player.");
+    }
   }
 
   @Override
   @Logger
-  public void deletePlayer(Long playerId) {
+  public void deletePlayer(Long playerId) throws ServerException {
 
     if (playerRepository.findById(playerId).isEmpty()) {
-      throw new ResourceNotFoundException("There is no player with given ID: " + playerId);
+      throw new ServerException("There is no player with given ID: " + playerId);
     }
 
     playerCache.remove(playerId);
