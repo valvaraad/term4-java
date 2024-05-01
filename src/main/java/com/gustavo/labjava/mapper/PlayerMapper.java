@@ -24,7 +24,11 @@ public class PlayerMapper {
   public PlayerDto mapToPlayerDto(Player player) {
 
     List<Championship> championships = player.getChampionships();
-    Set<Long> ids = championships.stream().map(Championship::getId).collect(Collectors.toSet());
+    Set<Long> ids = null;
+
+    if (player.getChampionships() != null) {
+      ids = championships.stream().map(Championship::getId).collect(Collectors.toSet());
+    }
 
     return new PlayerDto(
         player.getId(),
@@ -42,8 +46,13 @@ public class PlayerMapper {
             "There is no country with given ID: " + playerDto.getCountryId())
     );
 
-    List<Championship> championships =
-        this.championshipRepository.findAllById(playerDto.getChampionshipIds());
+    List<Championship> championships = null;
+
+    if (playerDto.getChampionshipIds() != null && this.championshipRepository != null) {
+      championships = this.championshipRepository.findAllById(playerDto.getChampionshipIds());
+    }
+
+
 
     return new Player(
         playerDto.getId(),

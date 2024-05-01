@@ -8,6 +8,7 @@ import com.gustavo.labjava.model.*;
 import com.gustavo.labjava.repository.*;
 import com.gustavo.labjava.service.PlayerService;
 import com.gustavo.labjava.utils.cache.*;
+import jakarta.transaction.Transactional;
 import java.util.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,19 +51,15 @@ public class PlayerServiceImpl implements PlayerService {
 
   @Override
   @Logger
-  public List<PlayerDto> createPlayers(List<PlayerDto> playerDtos) throws BadRequestException,
-      ServerException {
+  @Transactional
+  public List<PlayerDto> createPlayers(List<PlayerDto> playerDtos) throws BadRequestException {
     if (playerDtos.stream().anyMatch(p -> (p.getName().isEmpty() || p.getUsername().isEmpty()))) {
       throw new BadRequestException(wrongParameters);
     }
 
-    try {
-      return playerDtos.stream()
-          .map(p -> playerRepository.save(playerMapper.mapToPlayer(p)))
-          .map(p -> playerMapper.mapToPlayerDto(p)).toList();
-    } catch (Exception e) {
-      throw new ServerException("Internal server error occurred while saving player.");
-    }
+    return playerDtos.stream()
+        .map(p -> playerRepository.save(playerMapper.mapToPlayer(p)))
+        .map(p -> playerMapper.mapToPlayerDto(p)).toList();
   }
 
   @Override
@@ -87,7 +84,7 @@ public class PlayerServiceImpl implements PlayerService {
   @Override
   @Logger
   public PlayerDto updatePlayer(Long playerId, PlayerDto updatedPlayer)
-      throws ResourceNotFoundException, BadRequestException, ServerException {
+      throws ResourceNotFoundException, BadRequestException {
     if (updatedPlayer.getUsername().isEmpty() || updatedPlayer.getName().isEmpty()) {
       throw new BadRequestException(wrongParameters);
     }
@@ -115,19 +112,15 @@ public class PlayerServiceImpl implements PlayerService {
     Player updatedPlayerObj = playerRepository.save(player);
 
     playerCache.remove(playerId);
-    try {
-      return playerMapper.mapToPlayerDto(updatedPlayerObj);
-    } catch (Exception e) {
-      throw new ServerException("Failed to update player.");
-    }
+    return playerMapper.mapToPlayerDto(updatedPlayerObj);
   }
 
   @Override
   @Logger
-  public void deletePlayer(Long playerId) throws ServerException, ResourceNotFoundException {
+  public void deletePlayer(Long playerId) throws ResourceNotFoundException {
 
     if (playerRepository.findById(playerId).isEmpty()) {
-      throw new ServerException("There is no player with given ID: " + playerId);
+      throw new ResourceNotFoundException("There is no player with given ID: " + playerId);
     }
 
     playerCache.remove(playerId);

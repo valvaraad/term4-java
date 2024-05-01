@@ -26,7 +26,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler(ServerException.class)
+  @ExceptionHandler(Exception.class)
   public ResponseEntity<ExceptionDetails> serverException(ServerException exception,
                                                           WebRequest request) {
     ExceptionDetails details =

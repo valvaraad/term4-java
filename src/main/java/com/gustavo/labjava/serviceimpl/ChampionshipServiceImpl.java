@@ -4,7 +4,6 @@ import com.gustavo.labjava.aspect.Logger;
 import com.gustavo.labjava.dto.ChampionshipDto;
 import com.gustavo.labjava.exception.BadRequestException;
 import com.gustavo.labjava.exception.ResourceNotFoundException;
-import com.gustavo.labjava.exception.ServerException;
 import com.gustavo.labjava.mapper.ChampionshipMapper;
 import com.gustavo.labjava.model.*;
 import com.gustavo.labjava.repository.*;
@@ -42,9 +41,6 @@ public class ChampionshipServiceImpl implements ChampionshipService {
       throw new BadRequestException(wrongParameters);
     }
 
-    if (championshipRepository.findByYear(championshipDto.getYear()).isPresent()) {
-      throw new BadRequestException("This year already has a championship.");
-    }
 
     Championship championship = championshipMapper.mapToChampionship(championshipDto);
     Championship savedChampionship = championshipRepository.save(championship);
@@ -108,10 +104,9 @@ public class ChampionshipServiceImpl implements ChampionshipService {
   @Override
   @Logger
   @Transactional
-  public void deleteChampionship(Long championshipId) throws ServerException,
-      ResourceNotFoundException {
+  public void deleteChampionship(Long championshipId) throws ResourceNotFoundException {
     Championship championship = championshipRepository.findById(championshipId)
-        .orElseThrow(() -> new ServerException(
+        .orElseThrow(() -> new ResourceNotFoundException(
             "Championship not found with id " + championshipId));
 
     if (championship.getPlayers() != null) {
